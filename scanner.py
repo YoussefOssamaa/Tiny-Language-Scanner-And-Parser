@@ -86,12 +86,22 @@ class TinyLexer:
 
     ## expecting to return the value and its type for operators and symbols  ex: (':=', 'ASSIGN') or (';', 'SEMICOLON') and check for unrecognized symbols also
     def collect_operators_and_symbols(self):
-        return
+        ch = self.peek()
+        if ch == ':':
+            self.advance()
+            if self.peek() == '=':
+                self.advance()
+                return (':=', 'ASSIGN')
+            else:
+                return (':', 'UNKNOWN')
+        elif ch in SINGLE_CHAR_TOKENS:
+            self.advance()
+            return (ch, SINGLE_CHAR_TOKENS[ch])
+        else:
+            self.advance()
+            return (ch, 'UNKNOWN')
+        
     
-
-
-
-
 """
 the function should return a list called tokens,
 you can use the functions we created above (collect_identifier_or_keyword, collect_number, collect_operators_and_symbols, skip_whitespace, peek, advance)
