@@ -73,10 +73,18 @@ class TinyLexer:
 
     ## expecting to return the value and its type either identifier or keyword   ex: ('read', 'READ') or ('x', 'IDENTIFIER')
     def collect_identifier_or_keyword(self):
-        return 
-
-
-
+        ch = self.peek()
+        if not ch or not ch.isalpha():  # to ensure starting with a letter
+            return None ## this is a number, this function should not handle it
+    
+        start = self.pos
+        ## two conditions: is not None and is alphanumeric
+        while self.peek() and self.peek().isalnum():
+            self.advance()
+        value = self.text[start:self.pos]
+        if value.lower() in KEYWORDS: ## check for keywords in a case-insensitive manner (if case-sensitive, remove .lower())
+            return (value, KEYWORDS[value.lower()])
+        return (value, 'IDENTIFIER')
 
     ## expecting to return the value of the number as a string and its type as 'NUMBER'    ex: ('123', 'NUMBER')
     def collect_number(self):
@@ -106,7 +114,7 @@ class TinyLexer:
 the function should return a list called tokens,
 you can use the functions we created above (collect_identifier_or_keyword, collect_number, collect_operators_and_symbols, skip_whitespace, peek, advance)
 """
-    def tokenize(self):
+def tokenize(self):
 
 
             ## if ch.isalpha():
