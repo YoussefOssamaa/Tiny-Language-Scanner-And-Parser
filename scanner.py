@@ -88,9 +88,15 @@ class TinyLexer:
 
     ## expecting to return the value of the number as a string and its type as 'NUMBER'    ex: ('123', 'NUMBER')
     def collect_number(self):
-        return 
-    
-
+        ch = self.peek()
+        if not ch or not ch.isdigit():
+            return None
+        start = self.pos
+        while self.peek() and self.peek().isdigit():
+            self.advance()
+        value = self.text[start:self.pos]
+        return (value, 'NUMBER') 
+        
 
     ## expecting to return the value and its type for operators and symbols  ex: (':=', 'ASSIGN') or (';', 'SEMICOLON') and check for unrecognized symbols also
     def collect_operators_and_symbols(self):
