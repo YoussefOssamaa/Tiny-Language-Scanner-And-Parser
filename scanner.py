@@ -116,21 +116,27 @@ class TinyLexer:
             return (ch, 'UNKNOWN')
         
     
-"""
-the function should return a list called tokens,
-you can use the functions we created above (collect_identifier_or_keyword, collect_number, collect_operators_and_symbols, skip_whitespace, peek, advance)
-"""
-def tokenize(self):
+    """
+    the function should return a list called tokens,
+    you can use the functions we created above (collect_identifier_or_keyword, collect_number, collect_operators_and_symbols, skip_whitespace, peek, advance)
+    """
+    def tokenize(self):
+        tokens = []
+        while True:
+            self.skip_whitespace()
+            ch = self.peek()
 
+            if ch is None:
+                break
+            if ch.isalpha():
+                token = self.collect_identifier_or_keyword()
+            elif ch.isdigit():
+                token = self.collect_number()
+            else:
+                token = self. collect_operators_and_symbols()
+            tokens.append(token)
 
-            ## if ch.isalpha():
-
-            ## ch.isdigit()
-
-            ## if ch == ':' or ch in SINGLE_CHAR_TOKENS:
-
-            ## if unrecognized character
-
+        tokens.append(('EOF','EOF'))
         return tokens
 
 
@@ -142,11 +148,8 @@ def main():
 
 ## Prepare the input file as a string called text
 
-
-
     lexer = TinyLexer(text)
     tokens = lexer.tokenize()
-
 
 # Write tokens to output.txt
 
