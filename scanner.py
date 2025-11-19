@@ -142,17 +142,31 @@ class TinyLexer:
 
 
 
+def pause_if_frozen():
+    if getattr(sys,"frozen", False):
+        input("Press enter to exit")
 
 def main():
-    if len(sys.argv) != 3:
-        print("Usage: python main.py <input_file> <output_file>")
-        return
+    script_directory = Path(sys.executable).parent if getattr(sys, "frozen", False) \
+    else Path(__file__).parent
 
-    input_path = Path(sys.argv[1])
-    output_path = Path(sys.argv[2])
+    default_in = script_directory / "input.txt"
+    default_out = script_directory / "output.txt"
+    if  1 == len(sys.argv):
+        input_path = default_in
+        output_path = default_out
+    elif 3 == len(sys.argv):
+        input_path = Path(sys.argv[1])
+        output_path = Path(sys.argv[2])
+    else:
+        print("Usage: <exe> or python main.py <input_file> <output_file>")
+        pause_if_frozen()
+        return
+    
 
     if not input_path.exists():
         print(f"Error: Input file '{input_path}' does not exist.")
+        pause_if_frozen()
         return
 
     text = input_path.read_text()
@@ -168,6 +182,9 @@ def main():
     print("--- Tokens ---")
     for value, ttype in tokens:
         print(f"{value} , {ttype}")
+
+    pause_if_frozen()
+    
 
 if __name__ == '__main__':
     main()
