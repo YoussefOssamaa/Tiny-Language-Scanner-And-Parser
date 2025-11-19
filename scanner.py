@@ -144,16 +144,37 @@ class TinyLexer:
 
 
 def main():
+    if len(sys.argv) != 3:
+        print("Usage: python main.py <input_file> <output_file>")
+        return
 
+    input_path = Path(sys.argv[1])
+    output_path = Path(sys.argv[2])
 
-## Prepare the input file as a string called text
+    if not input_path.exists():
+        print(f"Error: Input file '{input_path}' does not exist.")
+        return
+
+    text = input_path.read_text()
 
     lexer = TinyLexer(text)
     tokens = lexer.tokenize()
 
-# Write tokens to output.txt
+    with output_path.open('w', encoding='utf-8') as f:
+        for value, ttype in tokens:
+            f.write(f"{value} , {ttype}\n")
 
-
+    print(f"Tokenization complete. {len(tokens)} tokens written to {output_path.resolve()}")
+    print("--- Tokens ---")
+    for value, ttype in tokens:
+        print(f"{value} , {ttype}")
 
 if __name__ == '__main__':
     main()
+
+
+
+
+
+
+    
