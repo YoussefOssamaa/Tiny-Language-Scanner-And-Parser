@@ -62,7 +62,13 @@ class TinyParser:
     def parse_program(self):
         node = ASTNode("Program")
         node.children.append(self.parse_stmt_seq())
+
+        ### Check for extra tokens after a valid program and ensure input ends exactly at EOF
+        if self.peek()[1] != "EOF":
+            lexeme, tok = self.peek()
+            raise Exception(f"Unexpected token after valid program: '{lexeme}' ({tok})")
         return node
+
 
     # stmt_seq -> stmt { ; stmt }
     def parse_stmt_seq(self):
@@ -167,10 +173,18 @@ def read_token_file(file_path):
             parts = line.split(',')
             if len(parts) != 2:
                 raise Exception(f"Invalid token line: {line}")
-            value = parts[0].strip()
-            tokentype = parts[1].strip()
-            tokens.append((value, tokentype))
+            tokenValue = parts[0].strip()
+            tokenType = parts[1].strip()
+            tokens.append((tokenValue, tokenType))
+
+        # Ensure EOF exists as the last token
+    if not tokens or tokens[-1][1] != 'EOF':
+        tokens.append(("EOF", "EOF"))
+
     return tokens
+
+
+
 
 
 def main():
