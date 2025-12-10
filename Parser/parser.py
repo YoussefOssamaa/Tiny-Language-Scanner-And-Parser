@@ -75,15 +75,16 @@ class TinyParser:
         node = ASTNode("StmtSeq")
         node.children.append(self.parse_stmt())
 
-        ### Check if the next token is a semicolon , 
-        ### if yes continue parsing more statements UNLESS
-        ### the next token is EOF , END or UNTIL
         while self.peek()[1] == 'SEMICOLON': 
             self.match('SEMICOLON')
-            if self.peek()[1] in ('EOF','END','UNTIL'):
+            # Stop if the next token is NOT the start of a statement
+            if self.peek()[1] not in ('IF', 'REPEAT', 'READ', 'WRITE', 'IDENTIFIER'):
                 break
             node.children.append(self.parse_stmt())
+
         return node
+
+
 
 
 
