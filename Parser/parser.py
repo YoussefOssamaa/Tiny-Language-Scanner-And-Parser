@@ -170,36 +170,51 @@ class TinyParser:
 
 
 
-    # write_stmt -> WRITE IDENTIFIER
+    # write_stmt -> WRITE exp
     def parse_write(self):
         node = ASTNode("WriteStmt")
         self.match('WRITE')
-        identifier_tok = self.match('IDENTIFIER')
-        identifier_node = ASTNode(f"Identifier({identifier_tok[0]})")
-        node.children.append(identifier_node)
+        expr_node = self.parse_expr()   
+        node.children.append(expr_node)
         return node
-
-
 
 
 
     # expr -> simple_expr [ ( < | = ) simple_expr ]
     def parse_expr(self):
-
+        left = self.parse_simple_expr()
+        if self.peek()[1] in ('LESSTHAN', 'EQUAL'):  
+            op_tok = self.advance()
+            op_node = ASTNode(f"Op({op_tok[0]})")
+            right = self.parse_simple_expr()
+            return ASTNode("OpExpr", [op_node, left, right])
+        return left
 
 
     
 
     # simple_expr -> term { (+|-) term }
     def parse_simple_expr(self):
-
+        left = self.parse_term()
+        while self.peek()[1] in ('PLUS', 'MINUS'):
+            op_tok = self.advance()       
+            op_node = ASTNode(f"Op({op_tok[0]})")
+            right = self.parse_term()
+            left = ASTNode("OpExpr", [op_node, left, right])
+        return left
 
 
 
 
     # term -> factor { (*|/) factor }
     def parse_term(self):
-
+        left = self.parse_factor()
+        while self.peek()[1] in ('MULT', 'DIV'):
+            op_tok = self.advance()             
+            op_node = ASTNode(f"Op({op_tok[0]})")
+            right = self.parse_factor()
+            left = ASTNode("OpExpr", [op_node, left, right])
+        return left
 
 
 
@@ -207,6 +222,28 @@ class TinyParser:
 
     # factor -> NUMBER | IDENTIFIER | ( expr )
     def parse_factor(self):
+        tok = self.peek()
+
+        # NUMBER
+        if tok[1] == 'NUMBER':
+            number_tok = self.advance()
+            return ASTNode(f"Number({number_tok[0]})")
+
+        # IDENTIFIER
+        elif tok[1] == 'IDENTIFIER':
+            ident_tok = self.advance()
+            return ASTNode(f"Identifier({ident_tok[0]})")
+
+        # ( expr )
+        elif tok[1] == 'LPAREN':   # ( 
+            self.match('LPAREN')
+            expr_node = self.parse_expr()
+            self.match('RPAREN')   # )
+            return expr_node
+
+        else:
+            raise Exception(f"Syntax Error in factor: unexpected token {tok}")
+
 
 
 
@@ -270,9 +307,9 @@ def main():
         ast = parser.parse_program()
         print("--- AST ---")
         print(ast)
-        print("Parsing successful ✅")
+        print("Parsing successful ")
     except Exception as e:
-        print(f"Parsing failed ❌: {e}")
+        print(f"Parsing failed : {e}")
 
 
 if __name__ == "__main__":
