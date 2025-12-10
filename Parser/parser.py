@@ -90,35 +90,94 @@ class TinyParser:
 
     # stmt -> if | repeat | assign | read | write
     def parse_stmt(self):
+        tok = self.peek()
+        token_type = tok[1]
+    
+        if token_type == 'IF':
+            return self.parse_if()
+        elif token_type == 'REPEAT':
+            return self.parse_repeat()
+        elif token_type == 'READ':
+            return self.parse_read()
+        elif token_type == 'WRITE':
+            return self.parse_write()
+        elif token_type == 'IDENTIFIER':
+            return self.parse_assign()
+        else:
+            raise Exception(f"Syntax Error")
 
 
 
 
     # if_stmt -> IF expr THEN stmt_seq [ELSE stmt_seq] END
     def parse_if(self):
+        node = ASTNode("IfStmt")
+        self.match('IF')
+        node.children.append(self.parse_expr())
+        self.match('THEN')
+        then_branch = self.parse_stmt_seq()
+        node.children.append(then_branch)
+        
+        if self.peek()[1] == 'ELSE':
+            self.match('ELSE')
+            else_branch = self.parse_stmt_seq()
+            node.children.append(else_branch)
+        
+        self.match('END')
+        return node
 
 
 
 
     # repeat_stmt -> REPEAT stmt_seq UNTIL expr
     def parse_repeat(self):
+        node = ASTNode("RepeatStmt")
+        self.match('REPEAT')
+        body = self.parse_stmt_seq()
+        node.children.append(body)
+        
+        self.match('UNTIL')
+        condition = self.parse_expr()
+        node.children.append(condition)
+        return node
 
 
 
 
     # assign_stmt -> IDENTIFIER := expr
     def parse_assign(self):
+        node = ASTNode("AssignStmt")
+        identifier_tok = self.match('IDENTIFIER')
+        identifier_node = ASTNode(f"Identifier({identifier_tok[0]})")
+        node.children.append(identifier_node)
+        
+        self.match('ASSIGN')
+        expr_node = self.parse_expr()
+        node.children.append(expr_node)
+        return node
 
 
 
     # read_stmt -> READ IDENTIFIER
     def parse_read(self):
+        node = ASTNode("ReadStmt")   
+        self.match('READ')
+        identifier_tok = self.match('IDENTIFIER')
+        identifier_node = ASTNode(f"Identifier({identifier_tok[0]})")
+        node.children.append(identifier_node)
+        return node
 
 
 
 
     # write_stmt -> WRITE IDENTIFIER
     def parse_write(self):
+        node = ASTNode("WriteStmt")
+        self.match('WRITE')
+        identifier_tok = self.match('IDENTIFIER')
+        identifier_node = ASTNode(f"Identifier({identifier_tok[0]})")
+        node.children.append(identifier_node)
+        return node
 
 
 
