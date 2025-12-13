@@ -254,10 +254,10 @@ class TreeVisualizer:
             return 'write'
         elif label.startswith('Identifier('):
             var_name = label.split('(')[1].rstrip(')')
-            return f'({var_name})'
+            return f'id\n({var_name})'
         elif label.startswith('Number('):
             num = label.split('(')[1].rstrip(')')
-            return f'({num})'
+            return f'Const \n({num})'
         elif label.startswith('Op('):
             op = label.split('(')[1].rstrip(')')
             return f'Op\n({op})'
