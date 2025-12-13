@@ -9,7 +9,7 @@ from PySide6.QtGui import QPen, QBrush, QColor, QFont, QWheelEvent, QPainter
 import sys
 from pathlib import Path
 
-from parser import TinyParser
+from tiny_parser import TinyParser
 
 
 class ZoomableGraphicsView(QGraphicsView):
